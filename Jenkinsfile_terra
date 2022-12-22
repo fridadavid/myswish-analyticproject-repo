@@ -1,0 +1,28 @@
+pipeline{
+	agent {
+		label 'terraformnode'
+	}
+	stages{
+		stage('checkout'){
+			steps{
+				git branch: 'dev', url: 'https://github.com/fridadavid/myswish-analyticproject-repo.git'
+			}
+		}
+		stage('terraform setup'){
+			steps{
+				sh "echo ready to provision"
+				sh "terraform init"
+			}
+		}
+		stage('createInfra'){
+			steps{
+				sh "terraform fmt --recursive"
+				sh "terraform validate"
+				sh "terraform plan"
+				sh "terraform show"
+				sh "terraform apply --auto-approve"
+				sh "terraform show"
+			}
+		}
+	}
+}

@@ -1,0 +1,82 @@
+pipeline{
+    agent any
+    environment{
+        DOCKERHUB_CREDENTIALS=credentials('dockerhubcred')
+    }
+    tools{
+        maven "maven3.8.6"
+    }
+    stages{
+        stage('checkout'){
+            steps{
+            
+               git branch: 'dev', url: 'https://github.com/fridadavid/myswish-analyticproject-repo.git'
+               
+            }
+        }
+    
+        stage('TestBuild'){
+            steps{
+                sh "mvn clean package"
+            }
+        }
+        
+        stage('CodeQuality'){
+            steps{
+                sh "mvn sonar:sonar"
+            }
+        }
+        //stage('UpLoadArtifacts'){
+           // steps{
+              //  sh "mvn deploy"
+           // }
+   // }
+        
+        stage('Build Docker Image'){
+            steps{
+                sh "docker build -t ayukdavidashu/swishanalytics-test:v1.4.0 ."
+               
+                echo "build image completed"
+            }
+        }
+       
+        stage('Login to Dockerhub'){
+            steps{
+                sh "echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin"
+                echo "login complete"
+            }
+        }
+        stage('Push Image to Dockerhub'){
+            steps{
+                sh "docker push ayukdavidashu/swishanalytics-test:v1.4.0"
+                echo "push image complete"
+               
+            }
+        }
+
+        stage('Deploy app to K8s'){
+            steps{
+                script{
+                    kubernetesDepoly(configs: "manifests.yaml",
+                    kubeconfigId: "kubernetes")
+                }
+               
+            }
+        }
+        /*
+        stage('email notification'){
+            steps{
+                post {
+        always {
+    emailext body: 'Hello to the team, the docker image was successfully build and push to dockerhub', recipientProviders: [buildUser(), contributor(), developers()], subject: 'success', to: 'ashudaff@gmail.com'
+        }
+    }
+               
+            }
+        }
+       */ 
+        
+    }
+    
+    
+}
