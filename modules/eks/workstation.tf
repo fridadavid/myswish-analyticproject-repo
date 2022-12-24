@@ -1,5 +1,5 @@
 data "http" "workstation-external-ip" {
-  url = "http://ipv4.davfrica.com"
+  url = "http://ipv4.icanhazip.com"
 }
 
 # Override with variable or hardcoded value if necessary

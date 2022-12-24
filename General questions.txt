@@ -1,0 +1,78 @@
+
+
+
+#########QUESTION2 ############
+
+General questions: number 2
+
+a.	(i) After creating the docker image: ayukdavidashu/swishanalytics-test:v1.4.0
+And pushed to my dockerHub account. I enabled vulnerability scanning in my account. The scanning was automatically done by snyk. The following report was generated on my dockerHub UI
+
+Tag           OS         Type          Vulnerabilities               Pulled       Pushed
+V1.4.0     linux       Image         94C   201H   176M                           6hours ago
+
+
+NB: Please i will need you to explian the meaning of the above vulnerability values.
+
+
+
+
+a.	(ii) Some of the best practices I will use to remediate CVE in my docker image include:
+•	I will first find out the vulnerability by scanning my image.
+•	I will fix all the critical vulnerabilities first, that is prioritize the vulnerability
+•	I will monitor all vulnerabilities in my environment with real-time alerts and notifications through slack, pager duty, Jira, emails etc
+•	All vulnerabilities should be fixed
+
+
+b.	To avoid deploying malicious packages/images I will do the following;
+•	Frequently scan my images for vulnerabilities using snyk, to know if the images are vulnerable before I do any deployment.
+•	Regularly rebuild my docker images to prevent known vulnerabilities already addressed
+
+
+
+########## QUESTION 6 ############
+
+General questions: number 6
+
+HOW I WILL MONITOR MY CI-CD DEPLOYMENT
+
+Today CI-CD pipelines help us as DevOps Engineers to deploy our applications faster and with fewer bugs, which is good for us to monitor this process. It is important to monitor the automation processes around development including CI-CD tools.
+In my CI-CD pipeline, I monitor:
+•	Jenkins job
+•	Pipeline. 
+    I use the Jenkins OpenTelemetry plugin and integrate it with New Relics.
+This will help me to:
+•	Visualize key metrics on my Jenkins pipeline such as how long my jobs are taking and error rates
+•	Use distributed tracing to point out where issues are coming from my pipeline
+•	Create dashboards and alerts for my Jenkins pipeline
+
+IMPLEMENTING THE MONITORING OF MY JENKINS PIPELINE WITH OPENTELEMETRY PLUGIN AND NEW RELIC
+
+MY RUNBOOK
+ 
+1.	Log into Jenkins with your username and password.
+2.	Select manage Jenkins
+3.	Select manage plugins
+4.	Select available and type OpenTelemetry in the search bar.
+5.	Select the OpenTelemetry checkbox and click install without restart
+6.	After installation is complete, restart your Jenkins server
+7.	Log in to Jenkins again and select manage Jenkins
+8.	Select configure systems
+9.	Scroll down to the OpenTelemetry section
+     -under OTLP Endpoint enter: https://otlp.nr-data.net:4317
+     -under authentication; select Header Authentication
+     - for Header name enter api-key
+     -for the Value header select Add > Jenkins
+     - for Kind, choose Secret text
+     - enter description:  New Relic INGEST - LICENSE
+     -for secret enter; New Relic License ingest key NB. Get that from your nr account
+     - click add
+     - Scroll up to the header value dropdown menu and select New Relic INGEST – LICENSE
+    -click apply and save
+        With the above integration, I can now set up my Jenkins jobs. I will log in to my new relic account and do the following to help me see what is happening in my deployment.
+•	Log in to my new relic account with email address and password
+•	Click on APM and services
+•	select Jenkins
+•	click Transactions to see my data and all the pipelines build steps including successes and failures
+•	to get more details to play around with the UI
+

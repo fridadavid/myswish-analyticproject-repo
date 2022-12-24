@@ -1,0 +1,46 @@
+##########KUBERNETES  PROJECT ###########
+1.
+Today there are serveral options of providing multiple develpoment environments in K8s for employees depending on the organization needs and infrastrucure.
+
+Based on the basic needs of Swish analytics I will suggest  the following  tools:
+
+ a. Rancher: it comes with a good management UI to manage multiple clusters
+                   -Employees can easily deploy multiple managed clusters from EKS, GKE
+                   -Import existing clusters
+                   -Enforce security across clusters
+b. Jenkins: automate CI/CD pipeline
+                 -to create a pipeline for building and deploying in different development environments
+
+c. dockerHub: to store all images we create to deploy applictions.
+                     - use official base  images to  in our dockerfiles to build our app images
+                     -we can easily scan our images for vulnerabilty before deploying
+d. Helm: use as package manager to delpoy third party tools in our k8s 
+              cluster
+
+
+
+2.
+
+To monitor my EKS Cluster in different environments, we can use tools like Prometheus and Grafana and New Relic.
+
+In one of my previous jobs i made use of New Relic to monitor our EKS clusters in different environments.
+Please permit me if i talk more on New Relic because is a monitoring tool that i have actually used. 
+
+2a.
+In this case i will use New Relic to Monitor my EKS clusters
+I integrate nr with all my AWS accounts having EKS clusters
+I used guided install in my nr account to easily install nr in my EKS clusters with relative ease making use of helm
+Immidiately nr starts monitoring the clusters
+
+
+2c.
+Notify when resources are underutilized
+
+In nr I write queries using NRQL  and create dashboards to monitor resources like:
+     -resource cpu used core
+     -memory working set bytes
+     -container cpu usage
+     -container memory usage
+From the above metrics i will be able to see on my dashboards if resources are underutilsed.
+I will create alert policies, define conditions that is set notification thresholds and assign to one or more notification channels like slack, emails to get notifcations when resources are underutilsed
+

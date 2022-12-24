@@ -25,26 +25,29 @@ POLICY
   }
 }
 
-resource "aws_iam_role_policy_attachment" "tango-cluster-AmazonEKSClusterPolicy" {
+resource "aws_iam_role_policy_attachment" "swish-cluster-AmazonEKSClusterPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = aws_iam_role.swish-cluster.name
 }
 
-resource "aws_iam_role_policy_attachment" "tango-cluster-AmazonEKSServicePolicy" {
+resource "aws_iam_role_policy_attachment" "swish-cluster-AmazonEKSServicePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
   role       = aws_iam_role.swish-cluster.name
 }
 
-resource "aws_iam_role_policy_attachment" "tango-cluster-AmazonVPCFullAccess" {
+resource "aws_iam_role_policy_attachment" "swish-cluster-AmazonVPCFullAccess" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonVPCFullAccess"
   role       = aws_iam_role.swish-cluster.name
 }
+
+
 data "aws_vpc" "swishvpc" {
   filter {
     name = "tag:Name"
     values = ["Staging swishVPC"]
   }
 }
+
 data "aws_subnets" "private"{
   /* vpc_id = "${data.aws_vpc.tangovpc.id}" */
    /* vpc_id = data.aws_vpc.tangovpc.id */
@@ -52,6 +55,25 @@ data "aws_subnets" "private"{
     name = "tag:Name"
     values = ["staging_swish_private_1a","staging_swish_private_1b"]
   }
+}
+
+
+data "aws_subnets" "public"{
+  /* vpc_id = "${data.aws_vpc.tangovpc.id}" */
+   /* vpc_id = data.aws_vpc.tangovpc.id */
+  filter {
+    name = "tag:Name"
+    values = ["staging_swish_public_1a","staging_swish_public_1b"]
+  }
+}
+
+
+data "aws_security_groups" "swish-sg"{
+  filter {
+    name = "tag:Name"
+    values = ["swish-sg"]
+  }
+
 }
 
 resource "aws_security_group" "swishSG-worker-cluster" {
@@ -97,6 +119,13 @@ resource "aws_security_group" "swishSG-worker-cluster" {
     protocol    = "tcp"
     cidr_blocks = ["10.130.0.0/16"]
   }
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
   ingress {
     from_port   = 30000
     to_port     = 32767
@@ -116,7 +145,7 @@ resource "aws_security_group" "swishSG-worker-cluster" {
   }
 }
 
-resource "aws_security_group_rule" "demo-cluster-ingress-workstation-https" {
+resource "aws_security_group_rule" "swish-cluster-ingress-workstation-https" {
  cidr_blocks       = [local.workstation-external-cidr]
   description       = "Allow workstation to communicate with the cluster API Server"
   from_port         = 443
@@ -125,6 +154,8 @@ resource "aws_security_group_rule" "demo-cluster-ingress-workstation-https" {
   to_port           = 443
   type              = "ingress"
 }
+
+
 
 resource "aws_eks_cluster" "swisheks_cluster" {
   name     = var.cluster-name
@@ -136,9 +167,9 @@ resource "aws_eks_cluster" "swisheks_cluster" {
   }
 
   depends_on = [
-    aws_iam_role_policy_attachment.tango-cluster-AmazonEKSClusterPolicy,
-    aws_iam_role_policy_attachment.tango-cluster-AmazonEKSServicePolicy,
-    aws_iam_role_policy_attachment.tango-cluster-AmazonVPCFullAccess,
+    aws_iam_role_policy_attachment.swish-cluster-AmazonEKSClusterPolicy,
+    aws_iam_role_policy_attachment.swish-cluster-AmazonEKSServicePolicy,
+    aws_iam_role_policy_attachment.swish-cluster-AmazonVPCFullAccess,
     aws_cloudwatch_log_group.swish_cloudwatch,
   ]
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
@@ -257,22 +288,19 @@ resource "aws_iam_policy" "worker_autoscaling" {
   policy      = data.aws_iam_policy_document.worker_autoscaling.json
 }
 
-resource "aws_iam_role_policy_attachment" "tango-node-AmazonEKSWorkerNodePolicy" {
+resource "aws_iam_role_policy_attachment" "swish-node-AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.swish-node.name
 }
 
-resource "aws_iam_role_policy_attachment" "tango-node-AmazonSSMFullAccess" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMFullAccess"
-  role       = aws_iam_role.swish-node.name
-}
 
-resource "aws_iam_role_policy_attachment" "tango-node-AmazonEKS_CNI_Policy" {
+
+resource "aws_iam_role_policy_attachment" "swish-node-AmazonEKS_CNI_Policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   role       = aws_iam_role.swish-node.name
 }
 
-resource "aws_iam_role_policy_attachment" "tango-node-AmazonEC2ContainerRegistryReadOnly" {
+resource "aws_iam_role_policy_attachment" "swish-node-AmazonEC2ContainerRegistryReadOnly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = aws_iam_role.swish-node.name
 }
@@ -281,7 +309,7 @@ resource "aws_eks_node_group" "swish_nodegroup" {
   cluster_name    = var.cluster-name
   node_group_name = var.node_group_name
   node_role_arn   = aws_iam_role.swish-node.arn
-  subnet_ids      = [sort(data.aws_subnets.private.ids)[0],sort(data.aws_subnets.private.ids)[1]]
+  subnet_ids      = [sort(data.aws_subnets.private.ids)[0],sort(data.aws_subnets.private.ids)[1],sort(data.aws_subnets.public.ids)[2]]
   /* subnet_ids      = [sort(data.aws_subnets.public.ids)[0],sort(data.aws_subnets.public.ids)[1]] */
   instance_types = [var.eks_node_instance_type]
   remote_access{
@@ -290,16 +318,16 @@ resource "aws_eks_node_group" "swish_nodegroup" {
 
   scaling_config {
     desired_size = 1
-    max_size = 1
+    max_size = 30
     min_size = 1
   }
 
   depends_on = [
     aws_iam_role_policy_attachment.workers_autoscaling,
-    aws_iam_role_policy_attachment.tango-node-AmazonEKSWorkerNodePolicy,
-    aws_iam_role_policy_attachment.tango-node-AmazonEKS_CNI_Policy,
-    aws_iam_role_policy_attachment.tango-node-AmazonEC2ContainerRegistryReadOnly,
-    aws_iam_role_policy_attachment.tango-node-AmazonSSMFullAccess,
+    aws_iam_role_policy_attachment.swish-node-AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.swish-node-AmazonEKS_CNI_Policy,
+    aws_iam_role_policy_attachment.swish-node-AmazonEC2ContainerRegistryReadOnly,
+    
   ]
   tags = {
     Name = var.node_name                
