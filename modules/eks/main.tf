@@ -68,14 +68,6 @@ data "aws_subnets" "public"{
 }
 
 
-data "aws_security_groups" "swish-sg"{
-  filter {
-    name = "tag:Name"
-    values = ["swish-sg"]
-  }
-
-}
-
 resource "aws_security_group" "swishSG-worker-cluster" {
   description = "Cluster communication with worker nodes"
   /* vpc_id      = "${data.aws_vpc.tangovpc.id}" */
@@ -309,7 +301,7 @@ resource "aws_eks_node_group" "swish_nodegroup" {
   cluster_name    = var.cluster-name
   node_group_name = var.node_group_name
   node_role_arn   = aws_iam_role.swish-node.arn
-  subnet_ids      = [sort(data.aws_subnets.private.ids)[0],sort(data.aws_subnets.private.ids)[1],sort(data.aws_subnets.public.ids)[2]]
+  subnet_ids      = [sort(data.aws_subnets.private.ids)[0],sort(data.aws_subnets.private.ids)[1] ] # sort(data.aws_subnets.public.ids)[0]]
   /* subnet_ids      = [sort(data.aws_subnets.public.ids)[0],sort(data.aws_subnets.public.ids)[1]] */
   instance_types = [var.eks_node_instance_type]
   remote_access{
@@ -317,7 +309,7 @@ resource "aws_eks_node_group" "swish_nodegroup" {
   }
 
   scaling_config {
-    desired_size = 1
+    desired_size = 2
     max_size = 30
     min_size = 1
   }

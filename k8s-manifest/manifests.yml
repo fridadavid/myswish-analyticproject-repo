@@ -3,7 +3,7 @@
 # kind: Namespace
 # apiVersion: v1
 # metadata:
-#   name: swish-analytics
+#   name: swish
 #   labels:
 #     name: swish-analytics
 
@@ -14,13 +14,13 @@
 apiVersion:  apps/v1
 kind: Deployment
 metadata:
-  namespace:  swish-analytics
+  namespace:  swish
   name:  swish-webapp
   labels:
     env: staging
 spec:
   replicas: 3
-  selectors: 
+  selector: 
       matchLabels: 
              app: swish-webapp
   template:
@@ -29,12 +29,10 @@ spec:
         app: swish-webapp
     spec:
       containers:
-      - image:  ayukdavidashu/swishanalytics-test:v1.0.0
+      - image:  ayukdavidashu/swishanalytics-test:v1.4.0
         name:  swish-app
         ports: 
         - containerPort: 8080
-      imagePullSecrets:
-        - name:     # create dockerhub secrete to enable you pull
         resources:         # VERTICAL POD AUTOSCALING
           requests:
             cpu: "200m"
@@ -44,7 +42,7 @@ spec:
             cpu: "300m"
         livenessProbe:
           httpGet:
-            path: /*       #path to application or use *
+            path: /maven-web-app      #path to application or use *
             port: 8080  # the port in which our application is expose to           
           timeoutSeconds: 10
           periodSeconds: 3
@@ -60,39 +58,14 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  namespace: swish-analytics
+  namespace: swish
   name:  swishapp-svc
 spec:
   selector:
     app: swish-webapp
-  type: ClusterIP
+  type: LoadBalancer
   ports:
   - port:  80
     targetPort:  8080
-
-
-####### HPA for deployment #######
----
-
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  namespace: swish-analytics
-  name: hpaautoscaler
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: swish-webapp
-  minReplicas: 1
-  maxReplicas: 20
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-
 
 
