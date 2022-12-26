@@ -54,15 +54,7 @@ pipeline{
             }
         }
 
-        stage('Deploy app to K8s'){
-            steps{
-                script{
-                    kubernetesDepoly(configs: "manifests.yaml",
-                    kubeconfigId: "kubernetes")
-                }
-               
-            }
-        }
+       
         /*
         stage('email notification'){
             steps{
