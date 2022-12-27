@@ -63,7 +63,7 @@ AWS SERVICES USED
 - I answered some of the questions in the task.
 
 
- Please i am open to learning new things. if there is any issue some were in my code. i open for corrections because the will help  me to grow. Thanks David. 
+ Please i am open to learning new things. if there is any issue some were in my code. i  am open for corrections because this  will help  me to grow. Thanks David. 
            
 
 
