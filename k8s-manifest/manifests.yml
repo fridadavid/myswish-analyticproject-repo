@@ -33,7 +33,7 @@ spec:
         name:  swish-app
         ports: 
         - containerPort: 8080
-        resources:         # VERTICAL POD AUTOSCALING
+        resources:         
           requests:
             cpu: "200m"
             memory: "400Mi"
@@ -42,8 +42,8 @@ spec:
             cpu: "300m"
         livenessProbe:
           httpGet:
-            path: /maven-web-app      #path to application or use *
-            port: 8080  # the port in which our application is expose to           
+            path: /maven-web-app  
+            port: 8080           
           timeoutSeconds: 10
           periodSeconds: 3
         readinessProbe:

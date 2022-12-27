@@ -50,15 +50,15 @@ IMPLEMENTING THE MONITORING OF MY JENKINS PIPELINE WITH OPENTELEMETRY PLUGIN AND
 
 MY RUNBOOK
  
-1.	Log into Jenkins with your username and password.
+1.	Log into Jenkins with my username and password in my jenkins ui.
 2.	Select manage Jenkins
 3.	Select manage plugins
 4.	Select available and type OpenTelemetry in the search bar.
 5.	Select the OpenTelemetry checkbox and click install without restart
-6.	After installation is complete, restart your Jenkins server
-7.	Log in to Jenkins again and select manage Jenkins
+6.	After installation is complete, restarted Jenkins server
+7.	Log in to Jenkins again and selected manage Jenkins
 8.	Select configure systems
-9.	Scroll down to the OpenTelemetry section
+9.	Scroll down to the OpenTelemetry section. fill the folling information.
      -under OTLP Endpoint enter: https://otlp.nr-data.net:4317
      -under authentication; select Header Authentication
      - for Header name enter api-key
@@ -74,5 +74,5 @@ MY RUNBOOK
 •	Click on APM and services
 •	select Jenkins
 •	click Transactions to see my data and all the pipelines build steps including successes and failures
-•	to get more details to play around with the UI
+•	to get more details  play around with the UI
 

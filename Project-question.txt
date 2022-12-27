@@ -17,6 +17,8 @@ c. dockerHub: to store all images we create to deploy applictions.
 d. Helm: use as package manager to delpoy third party tools in our k8s 
               cluster
 
+e. Docker: to build images and push to dockerHub
+
 
 
 2.

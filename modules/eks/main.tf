@@ -1,8 +1,4 @@
 # EKS Cluster Resources
-#  * IAM Role to allow EKS service to manage other AWS services
-#  * EC2 Security Group to allow networking traffic with EKS cluster
-#  * EKS Cluster
-#
 
 resource "aws_iam_role" "swish-cluster" {
   assume_role_policy = <<POLICY
@@ -202,9 +198,6 @@ resource "aws_cloudwatch_metric_alarm" "CPUUtilization" {
 }
 
 # EKS Worker Nodes Resources
-#  * IAM role allowing Kubernetes actions to access other AWS services
-#  * EKS Node Group to launch worker nodes
-#
 
 resource "aws_iam_role" "swish-node" {
   assume_role_policy = <<POLICY
