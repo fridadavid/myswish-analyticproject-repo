@@ -53,6 +53,38 @@ pipeline{
                
             }
         }
+        stage('Copy Deployent & Service Defination to K8s Master') {
+            
+            steps {
+                  sshagent(['sshkey']) {
+                       
+                        sh "scp -o StrictHostKeyChecking=no manifests.yml admin@54.158.90.160:/home/admin"
+                        
+                    }
+                }
+            
+        } 
+       stage('Waiting for Approvals') {
+            
+        steps{
+
+				input('Test Completed ? Please provide  Approvals for Prod Release ?')
+			  }
+            
+    }     
+    stage('Deploy  to Production') {
+            
+            steps {
+                  sshagent(['sshkey']) {
+                       
+                        sh "ssh -o StrictHostKeyChecking=no admin@54.158.90.160 -C \"sudo kubectl -f apply manifests.yml\""
+			
+                        
+                        
+                    }
+                }
+            
+        } 
 
        
         /*
